@@ -1,0 +1,44 @@
+<!DOCTYPE HTML>
+<html>
+<body>
+	<button id="btnStart" onClick="startTask()">Start!!!</button>
+	<button id="btnStop" onClick="stopTask()">Abort!!!</button>
+	
+	<p id="symbol_updates"></p>
+	<br>
+	<p id="num_updates"></p>
+	<script> 
+	  var es;
+	  function startTask() {
+	      es = new EventSource('fetchData.php');
+	      //a message is received
+	      es.addEventListener('message', function(e) {
+		  var result = JSON.parse( e.data );
+		  var symbol_updates = document.getElementById('symbol_updates');
+		  var num_updates = document.getElementById('num_updates');
+		  var message =result.message;
+		  
+		  if(message.charAt(0) != 'D'){
+		    num_updates.innerHTML = result.message + '<br>';
+		  }
+		  if(message.charAt(0) == 'D'){
+		    symbol_updates.innerHTML = result.message + '<br>';
+		    num_updates.innerHTML = ' '; 
+		  }
+		  
+		  if(message == 'CLOSE') {
+		      symbol_updates.innerHTML = 'All Done' + '<br>';
+		      num_updates.innerHTML = ' ';
+		      es.close();
+		  }
+	      });
+	  }
+	    
+	  function stopTask() {
+	      es.close();
+	      alert('Interrupted');
+	  }
+	  
+	</script>
+</body>
+</html>
